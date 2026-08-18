@@ -1,0 +1,151 @@
+/* ==========================================================================
+   PHASE 13 — MUSIC PLAYER
+   Controls the SAME <audio id="ambient-music"> element wired up in
+   Phase 3 (the envelope starts it on open) — this doesn't create a
+   second audio source, just a persistent UI for the one that already
+   exists. Floating, fixed position, brass-tinted glass to match the
+   two other glass moments already established (gallery hover, reason
+   card backs).
+   ========================================================================== */
+
+.music-player {
+  position: fixed;
+  left: var(--space-2);
+  bottom: var(--space-2);
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  border-radius: 999px;
+  background: rgba(184, 147, 90, 0.16);
+  backdrop-filter: blur(12px) saturate(1.15);
+  -webkit-backdrop-filter: blur(12px) saturate(1.15);
+  border: 1px solid rgba(217, 189, 142, 0.35);
+  box-shadow: var(--shadow-soft);
+  max-width: min(320px, calc(100vw - 2 * var(--space-2)));
+}
+
+.music-artwork {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  flex: none;
+  background: conic-gradient(var(--color-accent-brass), var(--color-accent-blush), var(--color-accent-brass));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: artwork-spin 8s linear infinite;
+  animation-play-state: paused;
+}
+.music-player.is-playing .music-artwork {
+  animation-play-state: running;
+}
+.music-artwork::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-ground-dark);
+}
+
+.music-play-toggle {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-accent-brass-soft);
+  color: var(--color-ground-darker);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  transition: background var(--dur-fast) var(--ease-page);
+}
+.music-play-toggle:hover, .music-play-toggle:focus-visible {
+  background: var(--color-accent-brass);
+}
+
+.music-info {
+  min-width: 0;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.music-title {
+  font-size: var(--fs-2xs);
+  color: var(--color-text-on-dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.music-seek {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(246, 239, 228, 0.25);
+  cursor: pointer;
+}
+.music-seek::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--color-accent-brass-soft);
+}
+.music-seek::-moz-range-thumb {
+  width: 9px;
+  height: 9px;
+  border: none;
+  border-radius: 50%;
+  background: var(--color-accent-brass-soft);
+}
+.music-seek:disabled { opacity: 0.4; cursor: default; }
+
+.music-volume-wrap {
+  flex: none;
+  display: flex;
+  align-items: center;
+}
+.music-volume {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 56px;
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(246, 239, 228, 0.25);
+  cursor: pointer;
+}
+.music-volume::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--color-accent-brass-soft);
+}
+.music-volume::-moz-range-thumb {
+  width: 9px;
+  height: 9px;
+  border: none;
+  border-radius: 50%;
+  background: var(--color-accent-brass-soft);
+}
+
+@keyframes artwork-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 640px) {
+  .music-volume-wrap { display: none; } /* keep the floating bar small on phones */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .music-artwork { animation: none; }
+}

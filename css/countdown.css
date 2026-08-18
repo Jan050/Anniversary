@@ -1,0 +1,63 @@
+/* ==========================================================================
+   PHASE 12 — COUNTDOWN
+   Four simple stat cards, ticking every second. Matches the brass-bordered
+   card language already established by the timeline nodes rather than
+   inventing a new component style for a single section.
+   ========================================================================== */
+
+#countdown {
+  position: relative;
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  text-align: center;
+  background: linear-gradient(180deg, var(--surface-5) 0%, var(--surface-4) 100%);
+}
+
+.countdown-target {
+  font-size: var(--fs-sm);
+  color: var(--color-accent-brass-soft);
+  opacity: 0.85;
+}
+
+.countdown-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+}
+
+.countdown-unit {
+  min-width: 90px;
+  padding: var(--space-3) var(--space-2);
+  border: 1px solid var(--color-accent-brass);
+  border-radius: var(--radius-md);
+  background: rgba(246, 239, 228, 0.04);
+}
+
+.countdown-value {
+  display: block;
+  font-family: var(--font-display);
+  font-size: clamp(var(--fs-xl), 5vw, var(--fs-2xl));
+  color: var(--color-text-on-dark);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.countdown-label {
+  display: block;
+  margin-top: var(--space-1);
+  font-size: var(--fs-2xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-accent-brass-soft);
+}
+
+.countdown-arrived {
+  font-family: var(--font-display);
+  font-size: var(--fs-2xl);
+  color: var(--color-accent-brass-soft);
+}

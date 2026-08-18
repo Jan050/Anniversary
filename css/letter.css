@@ -1,0 +1,118 @@
+/* ==========================================================================
+   PHASE 4 — LOVE LETTER
+   A single paper card with a subtle grain texture (SVG turbulence filter,
+   defined once in index.html and reused here — no external image needed).
+   Caveat (handwriting) is used for the letter body/signature ONLY, per
+   the type rule in NOTES.md.
+   ========================================================================== */
+
+#letter {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  background: linear-gradient(180deg, var(--surface-1) 0%, var(--surface-3) 100%);
+}
+
+.letter-paper {
+  position: relative;
+  width: min(620px, 90vw);
+  padding: var(--space-5) var(--space-4);
+  background: var(--color-white);
+  color: var(--color-ground-darker);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-deep);
+  transform: rotate(-0.6deg);
+  overflow: hidden;
+}
+
+/* Grain overlay — references the <filter id="paper-grain"> defined once
+   near the top of <body> in index.html. Blend mode keeps it a subtle
+   texture rather than visual noise over the text. */
+.letter-paper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  filter: url(#paper-grain);
+  opacity: 0.05;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+.letter-date {
+  position: relative;
+  text-align: right;
+  font-family: var(--font-body);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.04em;
+  color: var(--color-accent-moss);
+  margin-bottom: var(--space-3);
+}
+
+.letter-body {
+  position: relative;
+  font-family: var(--font-hand);
+  font-size: clamp(1.35rem, 3vw, 1.7rem);
+  line-height: 1.5;
+  white-space: pre-wrap;
+  min-height: 8em; /* reserve space so layout doesn't jump as text types in */
+}
+
+.letter-body .typing-cursor {
+  display: inline-block;
+  width: 2px;
+  margin-left: 2px;
+  background: var(--color-ground-darker);
+  animation: cursor-blink 900ms steps(1) infinite;
+}
+@keyframes cursor-blink {
+  50% { opacity: 0; }
+}
+
+.letter-signature {
+  position: relative;
+  margin-top: var(--space-3);
+  font-family: var(--font-hand);
+  font-size: clamp(1.5rem, 3.5vw, 1.9rem);
+  text-align: right;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity var(--dur-slow) var(--ease-bloom), transform var(--dur-slow) var(--ease-bloom);
+}
+.letter-signature.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.letter-continue {
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  letter-spacing: 0.04em;
+  color: var(--color-ground-darker);
+  background: var(--color-accent-brass-soft);
+  border: 1px solid var(--color-accent-brass);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-4);
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+  transition: opacity var(--dur-slow) var(--ease-bloom), transform var(--dur-slow) var(--ease-bloom),
+              background var(--dur-fast) var(--ease-page);
+}
+.letter-continue.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.letter-continue:hover,
+.letter-continue:focus-visible {
+  background: var(--color-accent-brass);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .letter-body .typing-cursor { display: none; }
+  .letter-signature { transition: none; }
+  .letter-continue { transition: none; }
+}

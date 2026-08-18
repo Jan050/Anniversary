@@ -1,0 +1,88 @@
+/* ==========================================================================
+   PHASE 6 — CELEBRATION
+   Two messages crossfade in sequence, then the "Our Memories" button
+   appears. Kept deliberately quiet after the bouquet's finale — this is
+   a breath, not another centerpiece.
+   ========================================================================== */
+
+#celebration {
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: var(--space-4);
+  background: linear-gradient(180deg, var(--surface-2) 0%, var(--surface-4) 100%);
+}
+
+#celebration > p:not(.section-mark) { display: none; }
+
+.celebration-text {
+  position: relative;
+  width: 100%;
+  max-width: var(--content-max-width);
+  min-height: 3.2em; /* reserve space so the crossfade doesn't shift layout */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.celebration-message {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity var(--dur-slow) var(--ease-bloom), transform var(--dur-slow) var(--ease-bloom);
+  padding: 0 var(--space-2);
+}
+.celebration-message.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.celebration-message--headline {
+  font-family: var(--font-display);
+  font-size: clamp(var(--fs-xl), 5vw, var(--fs-2xl));
+  color: var(--color-accent-brass-soft);
+}
+
+.celebration-message--body {
+  font-family: var(--font-body);
+  font-size: clamp(var(--fs-md), 2.6vw, var(--fs-lg));
+  color: var(--color-text-on-dark);
+  font-weight: 400;
+  line-height: var(--lh-relaxed);
+}
+
+.celebration-continue {
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  letter-spacing: 0.04em;
+  color: var(--color-ground-darker);
+  background: var(--color-accent-brass-soft);
+  border: 1px solid var(--color-accent-brass);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-4);
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+  transition: opacity var(--dur-slow) var(--ease-bloom), transform var(--dur-slow) var(--ease-bloom),
+              background var(--dur-fast) var(--ease-page);
+}
+.celebration-continue.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.celebration-continue:hover,
+.celebration-continue:focus-visible {
+  background: var(--color-accent-brass);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .celebration-message, .celebration-continue { transition: none; }
+}

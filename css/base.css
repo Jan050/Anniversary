@@ -1,0 +1,98 @@
+/* ==========================================================================
+   BASE — reset + global typography, built entirely from variables.css
+   ========================================================================== */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text-on-dark);
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-normal);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  transition: background var(--dur-slow) var(--ease-page), color var(--dur-slow) var(--ease-page);
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  line-height: var(--lh-tight);
+  margin: 0 0 var(--space-2);
+  font-weight: 500;
+}
+
+h1 { font-size: clamp(var(--fs-2xl), 6vw, var(--fs-3xl)); }
+h2 { font-size: clamp(var(--fs-xl), 4vw, var(--fs-2xl)); }
+h3 { font-size: var(--fs-lg); }
+
+p { margin: 0 0 var(--space-2); }
+
+a {
+  color: inherit;
+  text-decoration-color: var(--color-accent-brass-soft);
+}
+
+button {
+  font-family: var(--font-body);
+  cursor: pointer;
+}
+
+/* Visible keyboard focus — non-negotiable, no matter how "immersive" the
+   surrounding scene gets */
+:focus-visible {
+  outline: 2px solid var(--color-accent-brass-soft);
+  outline-offset: 3px;
+}
+
+.section {
+  padding: var(--section-padding-y) var(--section-padding-x);
+  max-width: var(--content-wide-width);
+  margin: 0 auto;
+  position: relative;
+}
+
+/* The brass rule + pressed-leaf index mark used at the top of each
+   section — the "structure encodes something true" device from the
+   design plan: it marks position in the journal, not a numbered step. */
+.section-mark {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--color-accent-brass);
+  font-size: var(--fs-2xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-3);
+}
+.section-mark::before {
+  content: '';
+  width: 28px;
+  height: 1px;
+  background: var(--color-accent-brass);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 640px) {
+  :root {
+    --section-padding-y: var(--space-5);
+    --section-padding-x: var(--space-2);
+  }
+}

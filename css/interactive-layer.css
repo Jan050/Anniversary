@@ -1,0 +1,136 @@
+/* ==========================================================================
+   PHASE 10 — INTERACTIVE FEATURES
+   A single fixed full-page layer, active across every section (not
+   scoped like the ambient effects in Phases 3/5). Pointer-events stay
+   off on the layer itself so it never blocks scrolling or clicks —
+   only individual hearts opt back in, so they're the one thing on this
+   layer you can actually click.
+   ========================================================================== */
+
+.interactive-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 40; /* above page content, below the loading screen (100) and lightbox (200) */
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* ---- Floating hearts ------------------------------------------------- */
+.float-heart {
+  position: absolute;
+  bottom: -30px;
+  font-size: var(--size, 20px);
+  pointer-events: auto;
+  cursor: pointer;
+  opacity: 0;
+  animation: heart-rise var(--rise-duration, 10s) linear forwards;
+  animation-delay: var(--rise-delay, 0s);
+  filter: drop-shadow(0 0 4px rgba(217, 189, 142, 0.25));
+  user-select: none;
+  -webkit-user-select: none;
+}
+@keyframes heart-rise {
+  0%   { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+  8%   { opacity: 0.9; }
+  50%  { transform: translate(var(--sway, 20px), -50vh) rotate(8deg); }
+  92%  { opacity: 0.7; }
+  100% { transform: translate(calc(var(--sway, 20px) * -1), -100vh) rotate(-6deg); opacity: 0; }
+}
+
+.heart-burst-piece {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-accent-blush);
+  animation: heart-burst 500ms var(--ease-page) forwards;
+}
+@keyframes heart-burst {
+  0%   { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--burst-x, 20px), var(--burst-y, -20px)) scale(0); opacity: 0; }
+}
+
+/* ---- Flower mouse trail ------------------------------------------------- */
+.mouse-flower {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  transform: translate(-50%, -50%);
+  opacity: 0.75;
+  animation: mouse-flower-fade 900ms var(--ease-page) forwards;
+}
+.mouse-flower::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 60% 0 60% 0;
+  background: var(--color-accent-blush);
+}
+@keyframes mouse-flower-fade {
+  0%   { opacity: 0.75; transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.3) rotate(50deg); }
+}
+
+/* ---- Butterflies ---------------------------------------------------------- */
+.butterfly {
+  position: absolute;
+  width: 22px;
+  height: 18px;
+  animation: butterfly-flight var(--flight-duration, 16s) ease-in-out infinite;
+  animation-delay: var(--flight-delay, 0s);
+  opacity: 0.85;
+}
+.butterfly-wing {
+  position: absolute;
+  top: 0;
+  width: 10px;
+  height: 16px;
+  background: var(--color-accent-brass-soft);
+  border-radius: 60% 40% 60% 40%;
+  animation: wing-flap 420ms ease-in-out infinite alternate;
+  transform-origin: right center;
+}
+.butterfly-wing.left { left: 0; transform-origin: right center; }
+.butterfly-wing.right { right: 0; transform-origin: left center; border-radius: 40% 60% 40% 60%; animation-delay: 40ms; }
+
+@keyframes wing-flap {
+  0%   { transform: scaleX(1) rotateY(0deg); }
+  100% { transform: scaleX(0.55) rotateY(40deg); }
+}
+
+/* Two alternating flight paths so the pair don't move in lockstep */
+@keyframes butterfly-flight {
+  0%   { transform: translate(-5vw, 70vh) rotate(0deg); }
+  20%  { transform: translate(25vw, 30vh) rotate(-8deg); }
+  40%  { transform: translate(55vw, 55vh) rotate(6deg); }
+  60%  { transform: translate(75vw, 20vh) rotate(-6deg); }
+  80%  { transform: translate(95vw, 45vh) rotate(4deg); }
+  100% { transform: translate(115vw, 60vh) rotate(0deg); }
+}
+
+/* ---- Click ripple -------------------------------------------------------- */
+.click-ripple {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid var(--color-accent-brass-soft);
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 0.8;
+  animation: ripple-expand 900ms var(--ease-page) forwards;
+}
+@keyframes ripple-expand {
+  0%   { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+  100% { transform: translate(-50%, -50%) scale(9); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .interactive-layer { display: none; }
+}
+
+/* Mouse-trail and butterflies are cursor/whimsy features that don't
+   translate to touch — skip them on coarse-pointer devices rather than
+   spawning elements nothing will ever see move. */
+@media (hover: none) and (pointer: coarse) {
+  .mouse-flower, .butterfly { display: none; }
+}

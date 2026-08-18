@@ -1,0 +1,107 @@
+/* ==========================================================================
+   PHASE 11 — SECRET EASTER EGG
+   A small glowing heart tucked into a corner of the Reasons section —
+   easy to miss at rest, gently pulsing so it rewards someone who's
+   actually looking. Reachable by keyboard too (it's a real, focusable
+   button), so the "secret" isn't only findable by sighted mouse users.
+   ========================================================================== */
+
+.secret-heart {
+  position: absolute;
+  bottom: var(--space-3);
+  right: var(--space-3);
+  width: 14px;
+  height: 14px;
+  border: none;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+  opacity: 0.32;
+  filter: drop-shadow(0 0 4px var(--color-accent-brass-soft));
+  animation: secret-pulse 3.4s var(--ease-linear) infinite;
+  transition: opacity var(--dur-fast) var(--ease-page);
+}
+.secret-heart::before {
+  content: '\2764\FE0F';
+  font-size: 14px;
+  line-height: 1;
+}
+.secret-heart:hover,
+.secret-heart:focus-visible {
+  opacity: 0.85;
+}
+@keyframes secret-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+
+/* ---- Modal ------------------------------------------------------------ */
+.secret-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 210;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(12, 26, 22, 0.88);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--dur-normal) var(--ease-page), visibility var(--dur-normal) var(--ease-page);
+  padding: var(--space-3);
+}
+.secret-modal.is-open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.secret-modal-card {
+  position: relative;
+  width: min(480px, 100%);
+  background: var(--color-white);
+  color: var(--color-ground-darker);
+  padding: var(--space-5) var(--space-4);
+  text-align: center;
+  box-shadow: var(--shadow-deep);
+  transform: scale(0.92);
+  transition: transform var(--dur-normal) var(--ease-bloom);
+}
+.secret-modal.is-open .secret-modal-card {
+  transform: scale(1);
+}
+
+.secret-modal-title {
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+  color: var(--color-ground-darker);
+  margin-bottom: var(--space-2);
+}
+
+.secret-modal-message {
+  font-family: var(--font-hand);
+  font-size: clamp(1.3rem, 3vw, 1.6rem);
+  line-height: 1.5;
+}
+
+.secret-modal-close {
+  position: absolute;
+  top: -18px;
+  right: -18px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-ground-darker);
+  color: var(--color-ground-light);
+  cursor: pointer;
+  font-size: var(--fs-md);
+  transition: background var(--dur-fast) var(--ease-page);
+}
+.secret-modal-close:hover,
+.secret-modal-close:focus-visible {
+  background: var(--color-accent-moss);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .secret-heart { animation: none; opacity: 0.4; }
+  .secret-modal, .secret-modal-card { transition: none; }
+}

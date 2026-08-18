@@ -1,0 +1,152 @@
+/* ==========================================================================
+   PHASE 2 — LOADING SCREEN
+   A single rose draws itself (stroke), then fills with color, while
+   soft particles drift and the loading line fades in beneath it.
+   Whole overlay fades out to reveal the landing scene once done.
+   ========================================================================== */
+
+#loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  background: radial-gradient(ellipse at 50% 40%, var(--surface-6) 0%, var(--surface-1) 100%);
+  padding: 0;
+  max-width: none;
+  transition: opacity var(--dur-slow) var(--ease-page), visibility var(--dur-slow) var(--ease-page);
+}
+
+/* Hide the Phase 1 placeholder text/mark inside this section now that
+   real content exists */
+#loading-screen .section-mark,
+#loading-screen > p:not(.loading-text) {
+  display: none;
+}
+
+#loading-screen.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.loading-rose {
+  width: min(38vw, 220px);
+  height: auto;
+  overflow: visible;
+}
+
+/* Every line in the rose uses pathLength="1" in the markup, so a
+   dasharray/dashoffset of 1 works uniformly regardless of the path's
+   actual geometry — no per-path length math needed. */
+.loading-rose path {
+  fill: none;
+  stroke: var(--color-accent-brass-soft);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: rose-draw var(--dur-bloom) var(--ease-bloom) forwards;
+}
+
+.loading-rose path.petal {
+  fill: var(--color-accent-blush);
+  fill-opacity: 0;
+  animation:
+    rose-draw var(--dur-bloom) var(--ease-bloom) forwards,
+    rose-fill var(--dur-normal) var(--ease-bloom) forwards;
+}
+
+.loading-rose path.leaf {
+  stroke: var(--color-accent-moss);
+  fill: var(--color-accent-moss);
+  fill-opacity: 0;
+  animation:
+    rose-draw var(--dur-bloom) var(--ease-bloom) forwards,
+    rose-fill var(--dur-normal) var(--ease-bloom) forwards;
+}
+
+/* Staggered draw order: center out, stem/leaves last */
+.loading-rose path:nth-child(1) { animation-delay: 0ms; }
+.loading-rose path:nth-child(2) { animation-delay: 120ms; }
+.loading-rose path:nth-child(3) { animation-delay: 260ms; }
+.loading-rose path:nth-child(4) { animation-delay: 420ms; }
+.loading-rose path:nth-child(5) { animation-delay: 600ms; }
+.loading-rose path:nth-child(6) { animation-delay: 820ms; }
+.loading-rose path:nth-child(7) { animation-delay: 1050ms; }
+
+.loading-rose path.petal:nth-child(1) { animation-delay: 0ms, 700ms; }
+.loading-rose path.petal:nth-child(2) { animation-delay: 120ms, 820ms; }
+.loading-rose path.petal:nth-child(3) { animation-delay: 260ms, 960ms; }
+.loading-rose path.petal:nth-child(4) { animation-delay: 420ms, 1120ms; }
+.loading-rose path.leaf:nth-child(6) { animation-delay: 820ms, 1400ms; }
+.loading-rose path.leaf:nth-child(7) { animation-delay: 1050ms, 1600ms; }
+
+@keyframes rose-draw {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes rose-fill {
+  to { fill-opacity: 1; }
+}
+
+.loading-text {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--fs-md);
+  color: var(--color-accent-brass-soft);
+  letter-spacing: 0.02em;
+  opacity: 0;
+  animation: text-fade-in var(--dur-slow) var(--ease-page) forwards;
+  animation-delay: 1500ms;
+  margin: 0;
+}
+
+@keyframes text-fade-in {
+  to { opacity: 1; }
+}
+
+/* Soft particles — populated by JS (random position/size/delay per load
+   so it never looks mechanically identical) */
+.loading-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.loading-particle {
+  position: absolute;
+  bottom: -10px;
+  width: var(--size, 4px);
+  height: var(--size, 4px);
+  border-radius: 50%;
+  background: var(--color-accent-brass-soft);
+  opacity: 0;
+  animation: particle-drift var(--drift-duration, 6s) var(--ease-linear) infinite;
+  animation-delay: var(--drift-delay, 0s);
+}
+
+@keyframes particle-drift {
+  0%   { transform: translateY(0) translateX(0); opacity: 0; }
+  10%  { opacity: 0.6; }
+  90%  { opacity: 0.3; }
+  100% { transform: translateY(-70vh) translateX(var(--drift-x, 20px)); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading-particle { animation: none; opacity: 0; }
+  .loading-rose path {
+    stroke-dashoffset: 0;
+    animation: none;
+  }
+  .loading-rose path.petal,
+  .loading-rose path.leaf {
+    fill-opacity: 1;
+    animation: none;
+  }
+  .loading-text { opacity: 1; animation: none; }
+}

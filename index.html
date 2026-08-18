@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>To My Love</title>
+
+  <!-- Runs before anything renders, so a saved "light" preference doesn't
+       flash dark-mode-then-light on load. Kept tiny and inline on purpose. -->
+  <script>
+    (function () {
+      try {
+        if (localStorage.getItem('site-theme') === 'light') {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      } catch (e) { /* localStorage unavailable (e.g. blocked) — default to dark */ }
+    })();
+  </script>
+
+  <!-- Google Fonts: Fraunces (display), Instrument Sans (body), Caveat (handwriting — Phase 4 only) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Instrument+Sans:wght@400;500;600&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/loading-screen.css">
+  <link rel="stylesheet" href="css/landing.css">
+  <link rel="stylesheet" href="css/letter.css">
+  <link rel="stylesheet" href="css/bouquet.css">
+  <link rel="stylesheet" href="css/memories-globe.css">
+  <link rel="stylesheet" href="css/celebration.css">
+  <link rel="stylesheet" href="css/gallery.css">
+  <link rel="stylesheet" href="css/interactive-layer.css">
+  <link rel="stylesheet" href="css/easter-egg.css">
+  <link rel="stylesheet" href="css/countdown.css">
+  <link rel="stylesheet" href="css/music-player.css">
+  <link rel="stylesheet" href="css/theme-toggle.css">
+  <link rel="stylesheet" href="css/ending.css">
+</head>
+<body>
+
+  <!-- Reusable SVG filter defs — referenced via filter: url(#id) in CSS.
+       Kept hidden and never rendered directly. -->
+  <svg class="sr-only" aria-hidden="true">
+    <defs>
+      <filter id="paper-grain">
+        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" result="noise" />
+        <feColorMatrix in="noise" type="saturate" values="0" />
+      </filter>
+    </defs>
+  </svg>
+
+  <!-- Phase 10: global interactive layer (hearts, mouse trail, butterflies,
+       click ripple) — sits above all sections, see interactive-layer.css -->
+  <div class="interactive-layer" id="interactive-layer" aria-hidden="true"></div>
+
+  <!-- Phase 13: floating music player — controls the #ambient-music audio
+       element declared in the Phase 3 landing section below -->
+  <div class="music-player" id="music-player">
+    <div class="music-artwork" aria-hidden="true"></div>
+    <button class="music-play-toggle" id="music-play-toggle" type="button" aria-label="Play music">
+      <span id="music-play-icon">&#9658;</span>
+    </button>
+    <div class="music-info">
+      <span class="music-title" id="music-title">[Song Title] &mdash; [Artist]</span>
+      <input class="music-seek" id="music-seek" type="range" min="0" max="100" value="0"
+             aria-label="Seek" disabled>
+    </div>
+    <div class="music-volume-wrap">
+      <input class="music-volume" id="music-volume" type="range" min="0" max="1" step="0.01" value="0.35"
+             aria-label="Volume">
+    </div>
+  </div>
+
+  <!-- Phase 14: dark/light theme toggle -->
+  <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to light mode" aria-pressed="false">
+    <span class="theme-toggle-thumb" aria-hidden="true">&#9789;</span>
+  </button>
+
+  <!-- ==========================================================
+       PHASE 1 SCAFFOLD ONLY.
+       Sections below are placeholders marking where each phase's
+       markup will land, so the structure is visible and reviewable
+       before content is built out.
+       ========================================================== -->
+
+  <main id="site">
+
+    <!-- Phase 2: Loading screen -->
+    <section id="loading-screen" aria-label="Loading" role="status">
+      <p class="section-mark">Loading</p>
+
+      <svg class="loading-rose" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <!-- center swirl -->
+        <path pathLength="1" class="petal" d="M100,95 C104,88 114,88 116,96 C118,104 110,110 102,108 C93,106 90,96 96,90 C103,83 116,84 120,94" />
+        <!-- inner petal ring -->
+        <path pathLength="1" class="petal" d="M100,95 C80,80 70,60 84,44 C96,58 98,78 100,95 C120,80 140,84 146,100 C128,102 112,100 100,95 C116,112 116,132 100,142 C92,126 94,108 100,95 C82,110 62,108 56,92 C74,88 90,90 100,95" />
+        <!-- middle petal ring -->
+        <path pathLength="1" class="petal" d="M100,95 C68,66 54,32 78,14 C98,36 100,66 100,95 C136,64 168,72 176,98 C146,102 118,100 100,95 C124,124 122,158 100,172 C86,148 90,116 100,95 C64,116 32,108 24,84 C54,78 82,84 100,95" />
+        <!-- outer petal ring -->
+        <path pathLength="1" class="petal" d="M100,95 C56,60 42,14 74,-8 C96,20 100,58 100,95 C150,52 190,62 198,94 C160,100 126,96 100,95 C130,138 126,182 100,198 C82,166 88,124 100,95 C50,124 8,112 2,80 C42,70 78,80 100,95" />
+        <!-- outer contour accent -->
+        <path pathLength="1" d="M60,60 C40,90 40,120 60,140 M140,60 C160,90 160,120 140,140" />
+        <!-- stem -->
+        <path pathLength="1" class="leaf" d="M100,170 C98,195 96,220 92,250" />
+        <!-- leaf -->
+        <path pathLength="1" class="leaf" d="M96,210 C112,206 126,214 130,228 C114,230 100,224 96,210 Z" />
+      </svg>
+
+      <p class="loading-text">gathering something beautiful for you&hellip;</p>
+
+      <div class="loading-particles" aria-hidden="true"></div>
+    </section>
+
+    <!-- Phase 3: Landing / envelope -->
+    <section id="landing" aria-label="Arrival">
+      <p class="section-mark">I. Arrival</p>
+
+      <div class="landing-ambient" aria-hidden="true"></div>
+
+      <div class="envelope" id="envelope" tabindex="0" role="button"
+           aria-label="Open the envelope to reveal your letter">
+        <div class="envelope-paper"></div>
+        <div class="envelope-body"></div>
+        <div class="envelope-flap"></div>
+        <div class="envelope-seal" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 21s-7-4.35-9.5-8.5C.5 8.5 3 5 6.5 5c1.9 0 3.4 1 4.5 2.5C12.1 6 13.6 5 15.5 5 19 5 21.5 8.5 19.5 12.5 17 16.65 12 21 12 21z"/></svg>
+        </div>
+        <p class="envelope-label">To My Love <span aria-hidden="true">&#10084;</span></p>
+        <p class="envelope-hint" aria-hidden="true">tap to open</p>
+      </div>
+
+      <!-- Placeholder: swap the src for a real royalty-free/licensed track
+           before this goes live. Starts on the same click that opens the
+           envelope, so it respects browser autoplay-with-gesture rules. -->
+      <audio id="ambient-music" loop preload="none">
+        <source src="assets/audio/soft-piano-placeholder.mp3" type="audio/mpeg">
+      </audio>
+    </section>
+
+    <!-- Phase 4: Love letter -->
+    <section id="letter" aria-label="The Letter">
+      <p class="section-mark">II. The Letter</p>
+
+      <div class="letter-paper">
+        <p class="letter-date" id="letter-date"></p>
+        <p class="letter-body" id="letter-body" aria-hidden="true"></p>
+        <p class="letter-body-sr sr-only" id="letter-body-sr"></p>
+        <p class="letter-signature" id="letter-signature"></p>
+      </div>
+
+      <button class="letter-continue" id="open-bouquet-btn" type="button">
+        Open My Bouquet
+      </button>
+    </section>
+
+    <!-- Phase 5: Bouquet centerpiece -->
+    <section id="bouquet" aria-label="The Bouquet">
+      <p class="section-mark">III. The Bouquet</p>
+
+      <div class="bouquet-stage" id="bouquet-stage">
+        <div class="bouquet-grow-wrap">
+        <div class="bouquet-svg-wrap">
+          <svg class="bouquet-svg" viewBox="0 0 460 560" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+
+            <!-- Stems: one multi-subpath path, all converging at the tie
+                 point (230,545), so the whole bundle "grows" together. -->
+            <g class="bloom-group stems">
+              <path pathLength="1" d="
+                M230,545 C200,470 160,350 150,183
+                M230,545 C228,420 229,250 230,113
+                M230,545 C260,470 300,350 310,183
+                M230,545 C170,500 110,420 95,300
+                M230,545 C290,500 350,420 365,300
+                M230,545 C200,480 180,380 175,290
+                M230,545 C260,480 280,380 285,290
+                M230,545 C180,460 150,330 135,230
+                M230,545 C280,460 310,330 325,230
+                M230,545 C200,430 180,260 170,140
+                M230,545 C229,400 229,200 230,70
+              " />
+            </g>
+
+            <!-- Leaves -->
+            <g class="bloom-group leaves">
+              <path pathLength="1" class="leaf" d="M170,380 C190,372 208,382 210,398 C192,400 176,392 170,380 Z" />
+              <path pathLength="1" class="leaf" d="M290,380 C270,372 252,382 250,398 C268,400 284,392 290,380 Z" />
+            </g>
+
+            <!-- Roses ×3 -->
+            <g class="bloom-group rose rose-1" transform="translate(150,165) scale(0.85)">
+              <path pathLength="1" class="petal" d="M0,-5 C4,-12 14,-12 16,-4 C18,4 10,10 2,8 C-7,6 -10,-4 -4,-10 C3,-17 16,-16 20,-6" />
+              <path pathLength="1" class="petal" d="M0,-5 C-20,-20 -30,-40 -16,-56 C-4,-42 -2,-22 0,-5 C20,-20 40,-16 46,0 C26,2 10,0 0,-5 C16,12 16,32 0,42 C-8,26 -6,8 0,-5 C-18,10 -38,8 -44,-8 C-26,-12 -10,-10 0,-5" />
+            </g>
+            <g class="bloom-group rose rose-2" transform="translate(230,95) scale(1.05)">
+              <path pathLength="1" class="petal" d="M0,-5 C4,-12 14,-12 16,-4 C18,4 10,10 2,8 C-7,6 -10,-4 -4,-10 C3,-17 16,-16 20,-6" />
+              <path pathLength="1" class="petal" d="M0,-5 C-20,-20 -30,-40 -16,-56 C-4,-42 -2,-22 0,-5 C20,-20 40,-16 46,0 C26,2 10,0 0,-5 C16,12 16,32 0,42 C-8,26 -6,8 0,-5 C-18,10 -38,8 -44,-8 C-26,-12 -10,-10 0,-5" />
+              <path pathLength="1" class="rose-accent" d="M-40,-40 C-60,-10 -60,20 -40,40 M40,-40 C60,-10 60,20 40,40" />
+            </g>
+            <g class="bloom-group rose rose-3" transform="translate(310,165) scale(0.85)">
+              <path pathLength="1" class="petal" d="M0,-5 C4,-12 14,-12 16,-4 C18,4 10,10 2,8 C-7,6 -10,-4 -4,-10 C3,-17 16,-16 20,-6" />
+              <path pathLength="1" class="petal" d="M0,-5 C-20,-20 -30,-40 -16,-56 C-4,-42 -2,-22 0,-5 C20,-20 40,-16 46,0 C26,2 10,0 0,-5 C16,12 16,32 0,42 C-8,26 -6,8 0,-5 C-18,10 -38,8 -44,-8 C-26,-12 -10,-10 0,-5" />
+            </g>
+
+            <!-- Tulips ×2 -->
+            <g class="bloom-group tulip tulip-1" transform="translate(95,300)">
+              <path pathLength="1" class="petal" d="M0,0 C-18,-10 -22,-34 -10,-60 C-4,-40 -2,-16 0,0" />
+              <path pathLength="1" class="petal" d="M0,0 C18,-10 22,-34 10,-60 C4,-40 2,-16 0,0" />
+              <path pathLength="1" class="petal" d="M0,0 C-8,-24 -6,-52 0,-68 C6,-52 8,-24 0,0" />
+            </g>
+            <g class="bloom-group tulip tulip-2" transform="translate(365,300)">
+              <path pathLength="1" class="petal" d="M0,0 C-18,-10 -22,-34 -10,-60 C-4,-40 -2,-16 0,0" />
+              <path pathLength="1" class="petal" d="M0,0 C18,-10 22,-34 10,-60 C4,-40 2,-16 0,0" />
+              <path pathLength="1" class="petal" d="M0,0 C-8,-24 -6,-52 0,-68 C6,-52 8,-24 0,0" />
+            </g>
+
+            <!-- Daisies ×2: radiating petal strokes + a pop-in center -->
+            <g class="bloom-group daisy daisy-1" transform="translate(175,290)">
+              <path pathLength="1" class="petal-strokes" d="
+                M8,0 L28,0 M5.7,5.7 L19.8,19.8 M0,8 L0,28 M-5.7,5.7 L-19.8,19.8
+                M-8,0 L-28,0 M-5.7,-5.7 L-19.8,-19.8 M0,-8 L0,-28 M5.7,-5.7 L19.8,-19.8
+              " />
+              <circle class="bud-pop daisy-center" cx="0" cy="0" r="7" />
+            </g>
+            <g class="bloom-group daisy daisy-2" transform="translate(285,290)">
+              <path pathLength="1" class="petal-strokes" d="
+                M8,0 L28,0 M5.7,5.7 L19.8,19.8 M0,8 L0,28 M-5.7,5.7 L-19.8,19.8
+                M-8,0 L-28,0 M-5.7,-5.7 L-19.8,-19.8 M0,-8 L0,-28 M5.7,-5.7 L19.8,-19.8
+              " />
+              <circle class="bud-pop daisy-center" cx="0" cy="0" r="7" />
+            </g>
+
+            <!-- Baby's breath ×3 clusters — dots populated by bouquet.js -->
+            <g id="babys-breath-1" class="babys-breath" transform="translate(135,230)"></g>
+            <g id="babys-breath-2" class="babys-breath" transform="translate(325,230)"></g>
+            <g id="babys-breath-3" class="babys-breath" transform="translate(170,140)"></g>
+
+            <!-- Cherry blossom sprig — blossoms populated by bouquet.js -->
+            <g id="cherry-blossom" transform="translate(230,60)"></g>
+
+            <!-- Ribbon wrap -->
+            <g class="bloom-group ribbon">
+              <path pathLength="1" class="petal ribbon-loop-left" d="M230,528 C200,500 170,500 165,525 C162,545 190,555 215,540 C222,536 228,532 230,528 Z" />
+              <path pathLength="1" class="petal ribbon-loop-right" d="M230,528 C260,500 290,500 295,525 C298,545 270,555 245,540 C238,536 232,532 230,528 Z" />
+              <g class="ribbon-tails">
+                <path pathLength="1" class="petal" d="M222,536 C215,555 205,580 197,598 C206,596 216,588 224,568 Z" />
+                <path pathLength="1" class="petal" d="M238,536 C245,555 255,580 263,598 C254,596 244,588 236,568 Z" />
+              </g>
+              <ellipse class="bud-pop" cx="230" cy="528" rx="13" ry="9" fill="var(--color-accent-brass)" style="animation-delay: 8100ms;" />
+            </g>
+
+          </svg>
+
+          <div class="bouquet-particles" id="bouquet-particles" aria-hidden="true"></div>
+        </div>
+        </div>
+      </div>
+
+      <button class="bouquet-continue" id="bouquet-continue-btn" type="button">
+        See Our Memories
+      </button>
+    </section>
+
+    <!-- Phase 5b: Memories globe (new section — separate from the bouquet) -->
+    <section id="memories-globe" aria-label="A World of Us">
+      <p class="section-mark">IV. A World of Us</p>
+      <p class="globe-hint">drag to spin</p>
+
+      <div class="globe-stage" id="globe-stage">
+        <div class="globe" id="globe"></div>
+      </div>
+
+      <button class="globe-continue" id="globe-continue-btn" type="button">
+        Continue
+      </button>
+    </section>
+
+
+    <!-- Phase 6: Celebration message -->
+    <section id="celebration" aria-label="Happy Anniversary">
+      <p class="section-mark">V. Happy Anniversary</p>
+
+      <div class="celebration-text" aria-live="polite">
+        <p class="celebration-message celebration-message--headline" id="celebration-msg-1">
+          Happy Anniversary, My Love <span aria-hidden="true">&#10084;</span>
+        </p>
+        <p class="celebration-message celebration-message--body" id="celebration-msg-2">
+          Every flower here represents one of the beautiful memories we&rsquo;ve created together.
+        </p>
+      </div>
+
+      <button class="celebration-continue" id="open-memories-btn" type="button">
+        Our Memories
+      </button>
+    </section>
+
+    <!-- Phase 7: Memory gallery -->
+    <section id="gallery" aria-label="Memories">
+      <p class="section-mark">VI. Memories</p>
+      <h2>A Few of My Favorites</h2>
+
+      <div class="gallery-grid" id="gallery-grid"></div>
+    </section>
+
+    <!-- Lightbox: single reusable dialog, populated by gallery.js -->
+    <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
+      <div class="lightbox-frame">
+        <button class="lightbox-close" id="lightbox-close" type="button" aria-label="Close">&times;</button>
+        <button class="lightbox-prev" id="lightbox-prev" type="button" aria-label="Previous photo">&#8249;</button>
+        <button class="lightbox-next" id="lightbox-next" type="button" aria-label="Next photo">&#8250;</button>
+        <div class="lightbox-photo">
+          <img id="lightbox-img" src="" alt="">
+        </div>
+        <p class="lightbox-caption" id="lightbox-caption"></p>
+      </div>
+    </div>
+
+    <!-- Phase 12: Countdown -->
+    <section id="countdown" aria-label="Countdown to Next Anniversary">
+      <p class="section-mark">VII. Next Year</p>
+      <h2>Counting Down to Next Year</h2>
+      <p class="countdown-target" id="countdown-target"></p>
+
+      <div class="countdown-grid" id="countdown-grid" aria-live="off">
+        <div class="countdown-unit">
+          <span class="countdown-value" id="countdown-days">00</span>
+          <span class="countdown-label">Days</span>
+        </div>
+        <div class="countdown-unit">
+          <span class="countdown-value" id="countdown-hours">00</span>
+          <span class="countdown-label">Hours</span>
+        </div>
+        <div class="countdown-unit">
+          <span class="countdown-value" id="countdown-minutes">00</span>
+          <span class="countdown-label">Minutes</span>
+        </div>
+        <div class="countdown-unit">
+          <span class="countdown-value" id="countdown-seconds">00</span>
+          <span class="countdown-label">Seconds</span>
+        </div>
+      </div>
+
+      <!-- Phase 11: secret easter egg — relocated here after the Reasons
+           section (which it used to live in) was removed -->
+      <button class="secret-heart" id="secret-heart" type="button" aria-label="A small heart"></button>
+    </section>
+
+    <!-- Secret modal: revealed by the heart above -->
+    <div class="secret-modal" id="secret-modal" role="dialog" aria-modal="true" aria-labelledby="secret-modal-title">
+      <div class="secret-modal-card">
+        <button class="secret-modal-close" id="secret-modal-close" type="button" aria-label="Close">&times;</button>
+        <h2 class="secret-modal-title" id="secret-modal-title">You Found My Secret <span aria-hidden="true">&#10084;</span></h2>
+        <p class="secret-modal-message" id="secret-modal-message"></p>
+      </div>
+    </div>
+
+    <!-- Phase 15: Ending -->
+    <section id="ending" aria-label="Forever Us">
+      <p class="section-mark">VIII. Forever</p>
+
+      <div class="ending-text" aria-live="polite">
+        <p class="ending-message ending-message--body" id="ending-msg-1">
+          Thank you for choosing me every single day.
+        </p>
+        <p class="ending-message ending-message--body" id="ending-msg-2">
+          I love you yesterday, today, tomorrow, and forever.
+        </p>
+        <p class="ending-message ending-message--final" id="ending-msg-3">
+          <span aria-hidden="true">&#10084;&#65039;</span> Forever Us <span aria-hidden="true">&#10084;&#65039;</span>
+        </p>
+      </div>
+
+      <div class="ending-sparkles" id="ending-sparkles" aria-hidden="true"></div>
+    </section>
+
+  </main>
+
+  <!-- Phase 13: floating music player (fixed position, added later) -->
+  <!-- Phase 10: ambient particle/interaction layer (fixed canvas or SVG overlay, added later) -->
+  <!-- Phase 11: hidden easter-egg heart (added within a later phase's section) -->
+
+  <!-- Plain scripts, not type="module" — modules are blocked by CORS when
+       opened directly via file://, which breaks the "works fully offline,
+       just double-click index.html" requirement. Loaded in dependency
+       order; defer preserves that order and waits for DOM parse. -->
+  <script src="js/site-namespace.js" defer></script>
+  <script src="js/loading-screen.js" defer></script>
+  <script src="js/landing-scene.js" defer></script>
+  <script src="js/envelope.js" defer></script>
+  <script src="js/love-letter.js" defer></script>
+  <script src="js/bouquet.js" defer></script>
+  <script src="js/memories-globe.js" defer></script>
+  <script src="js/celebration.js" defer></script>
+  <script src="js/gallery.js" defer></script>
+  <script src="js/interactive-layer.js" defer></script>
+  <script src="js/easter-egg.js" defer></script>
+  <script src="js/countdown.js" defer></script>
+  <script src="js/music-player.js" defer></script>
+  <script src="js/theme-toggle.js" defer></script>
+  <script src="js/ending.js" defer></script>
+  <script src="js/main.js" defer></script>
+</body>
+</html>

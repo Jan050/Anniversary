@@ -1,0 +1,212 @@
+/* ==========================================================================
+   PHASE 5 — BOUQUET (centerpiece)
+   Reuses the stroke-draw-then-fill technique from the Phase 2 rose
+   (rose-draw / rose-fill keyframes, defined in loading-screen.css and
+   loaded globally) so the whole site's "flowers draw themselves" motif
+   stays consistent rather than each phase inventing its own version.
+
+   Everything starts PAUSED and only starts running once bouquet.js adds
+   .is-blooming to .bouquet-stage (triggered by scroll-into-view or the
+   letter's "Open My Bouquet" button) — so nothing burns its animation
+   budget off-screen before the visitor scrolls to it.
+   ========================================================================== */
+
+#bouquet {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, var(--surface-3) 0%, var(--surface-2) 100%);
+  overflow: hidden;
+}
+
+#bouquet > p:not(.section-mark) { display: none; } /* Phase 1 placeholder copy */
+
+.bouquet-stage {
+  position: relative;
+  width: min(460px, 88vw);
+}
+
+.bouquet-grow-wrap {
+  transform: scale(0.42) translateY(70px);
+  opacity: 0;
+  transform-origin: 50% 100%; /* grows upward from its base, like a real bouquet rising */
+  transition: transform 2200ms var(--ease-bloom), opacity 1600ms var(--ease-bloom);
+}
+.bouquet-stage.is-blooming .bouquet-grow-wrap {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+.bouquet-svg-wrap {
+  position: relative;
+  z-index: 1;
+  transition: transform 1200ms var(--ease-page);
+  transform: scale(1);
+}
+.bouquet-stage.is-zoomed .bouquet-svg-wrap {
+  transform: scale(1.045);
+}
+
+.bouquet-svg { width: 100%; height: auto; overflow: visible; }
+
+/* ---- Shared stroke-draw-then-fill groups (stems, leaves, roses, tulips,
+   ribbon) — same mechanism as the Phase 2 loading rose. -------------- */
+.bloom-group path {
+  fill: none;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: rose-draw var(--dur-bloom) var(--ease-bloom) forwards;
+  animation-play-state: paused;
+}
+.bloom-group path.petal,
+.bloom-group path.leaf {
+  fill-opacity: 0;
+  animation: rose-draw var(--dur-bloom) var(--ease-bloom) forwards,
+             rose-fill var(--dur-normal) var(--ease-bloom) forwards;
+  animation-play-state: paused, paused;
+}
+.bouquet-stage.is-blooming .bloom-group path {
+  animation-play-state: running;
+}
+
+.stems path { stroke: var(--color-accent-moss); animation-delay: 0ms; }
+.leaves path { stroke: var(--color-accent-moss); fill: var(--color-accent-moss); animation-delay: 900ms, 1500ms; }
+
+.rose path { stroke: var(--color-accent-brass-soft); fill: var(--color-accent-blush); }
+.rose-1 path { animation-delay: 1800ms, 2500ms; }
+.rose-2 path { animation-delay: 1950ms, 2650ms; }
+.rose-3 path { animation-delay: 2100ms, 2800ms; }
+.rose-2 .rose-accent { fill: none; } /* main rose's extra outer contour stays stroke-only */
+
+.tulip path { stroke: var(--color-accent-brass-soft); fill: var(--color-accent-blush); }
+.tulip-1 path { animation-delay: 3200ms, 3700ms; }
+.tulip-2 path { animation-delay: 3350ms, 3850ms; }
+
+.daisy path.petal-strokes {
+  stroke: var(--color-text-on-dark);
+  fill: none;
+  stroke-width: 3;
+  animation: rose-draw var(--dur-normal) var(--ease-bloom) forwards;
+  animation-play-state: paused;
+}
+.bouquet-stage.is-blooming .daisy path.petal-strokes { animation-play-state: running; }
+.daisy-1 path.petal-strokes { animation-delay: 4800ms; }
+.daisy-2 path.petal-strokes { animation-delay: 4950ms; }
+
+.ribbon path { stroke: var(--color-accent-brass); fill: var(--color-accent-brass-soft); }
+.ribbon path { animation-timing-function: var(--ease-page), var(--ease-page); }
+.ribbon-loop-left { animation-delay: 7300ms, 7800ms; }
+.ribbon-loop-right { animation-delay: 7420ms, 7920ms; }
+.ribbon-tails path { animation-delay: 7600ms, 8000ms; }
+
+/* ---- Pop-in elements: daisy centers, baby's breath, cherry blossom —
+   these are JS-generated (see bouquet.js) or simple shapes, using scale
+   + fade rather than stroke-draw since the brief describes these as
+   "appear" / "blossom" / "fade in" rather than a drawn line. ---------- */
+@keyframes bud-pop {
+  0%   { opacity: 0; transform: scale(0.3); }
+  70%  { opacity: 1; transform: scale(1.12); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.bud-pop {
+  opacity: 0;
+  animation: bud-pop var(--dur-normal) var(--ease-bloom) forwards;
+  animation-play-state: paused;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+.bouquet-stage.is-blooming .bud-pop { animation-play-state: running; }
+
+.daisy-center { fill: var(--color-accent-brass); animation-delay: 5100ms; }
+.daisy-1 .daisy-center { animation-delay: 5100ms; }
+.daisy-2 .daisy-center { animation-delay: 5250ms; }
+
+.bb-dot { fill: var(--color-text-on-dark); }
+.blossom-petal { fill: var(--color-accent-blush); }
+.blossom-center { fill: var(--color-accent-brass); }
+
+/* ---- Sparkles (golden, twinkling) --------------------------------------- */
+.bouquet-particles {
+  position: absolute;
+  inset: -10%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.sparkle {
+  position: absolute;
+  width: var(--size, 10px);
+  height: var(--size, 10px);
+  opacity: 0;
+  animation: sparkle-twinkle var(--sparkle-duration, 2.6s) var(--ease-linear) infinite;
+  animation-delay: var(--sparkle-delay, 0s);
+}
+.sparkle::before, .sparkle::after {
+  content: '';
+  position: absolute;
+  background: var(--color-accent-brass-soft);
+}
+.sparkle::before { top: 0; left: 50%; width: 1.5px; height: 100%; transform: translateX(-50%); }
+.sparkle::after { left: 0; top: 50%; height: 1.5px; width: 100%; transform: translateY(-50%); }
+@keyframes sparkle-twinkle {
+  0%, 100% { opacity: 0; transform: scale(0.5) rotate(0deg); }
+  50% { opacity: 0.85; transform: scale(1) rotate(45deg); }
+}
+
+/* ---- Confetti (brief celebratory burst, not continuous) ----------------- */
+.confetti-piece {
+  position: absolute;
+  top: -5%;
+  width: 7px;
+  height: 12px;
+  opacity: 0;
+  animation: confetti-fall var(--confetti-duration, 3.2s) var(--ease-page) forwards;
+  animation-delay: var(--confetti-delay, 0s);
+}
+@keyframes confetti-fall {
+  0%   { transform: translateY(0) rotate(0deg); opacity: 0; }
+  8%   { opacity: 0.95; }
+  100% { transform: translateY(120%) rotate(var(--confetti-spin, 260deg)); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bouquet-grow-wrap { transition: none; transform: none; opacity: 1; }
+  .bouquet-svg-wrap { transition: none; }
+  .sparkle { animation: none; opacity: 0; }
+}
+
+/* ---- Continue button — deterministic click-to-advance, doesn't rely
+   solely on scrolling to trigger the next section. -------------------- */
+.bouquet-continue {
+  margin-top: var(--space-4);
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  letter-spacing: 0.04em;
+  color: var(--color-ground-darker);
+  background: var(--color-accent-brass-soft);
+  border: 1px solid var(--color-accent-brass);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-4);
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+  transition: opacity var(--dur-slow) var(--ease-bloom), transform var(--dur-slow) var(--ease-bloom),
+              background var(--dur-fast) var(--ease-page);
+}
+.bouquet-continue.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.bouquet-continue:hover,
+.bouquet-continue:focus-visible {
+  background: var(--color-accent-brass);
+}
+@media (prefers-reduced-motion: reduce) {
+  .bouquet-continue { transition: none; }
+}

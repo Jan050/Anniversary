@@ -1,0 +1,128 @@
+/* ==========================================================================
+   DESIGN SYSTEM — "Pressed Botanical Conservatory"
+   Every color, type, spacing, and motion value the site uses lives here.
+   No section should hardcode a hex value or px size outside this file.
+   ========================================================================== */
+
+:root {
+  /* ---- Color: named, not generic ------------------------------------- */
+  --color-ground-dark: #16302A;      /* bottle-green — primary dark ground */
+  --color-ground-darker: #0C1A16;    /* near-black ink — deepest shadows, text on ivory */
+  --color-ground-light: #F6EFE4;     /* warm ivory — primary light ground */
+  --color-ground-light-2: #EFE4D2;   /* slightly deeper ivory, for cards/panels */
+  --color-accent-brass: #B8935A;     /* aged brass — primary accent, rules, icons */
+  --color-accent-brass-soft: #D9BD8E;/* lighter brass for hover/glow states */
+  --color-accent-blush: #D9A9A0;     /* dusty blush — secondary accent, warmth */
+  --color-accent-moss: #5C7A5E;      /* muted moss green — tertiary, leaves/stems */
+  --color-white: #FFFCF7;
+
+  /* Semantic aliases (use these in components, not raw colors above) */
+  --color-bg: var(--color-ground-dark);
+  --color-bg-light: var(--color-ground-light);
+  --color-text-on-dark: var(--color-ground-light);
+  --color-text-on-light: var(--color-ground-darker);
+  --color-rule: var(--color-accent-brass);
+  --color-accent: var(--color-accent-brass);
+  --color-accent-2: var(--color-accent-blush);
+
+  /* ---- Type ------------------------------------------------------------ */
+  --font-display: 'Fraunces', Georgia, serif;      /* headlines, large emotional lines */
+  --font-body: 'Instrument Sans', -apple-system, sans-serif; /* body copy, UI */
+  --font-hand: 'Caveat', cursive;                  /* love-letter phase ONLY — used sparingly */
+
+  --fs-2xs: 0.75rem;   /* 12px — captions, index marks */
+  --fs-xs: 0.875rem;   /* 14px */
+  --fs-sm: 1rem;       /* 16px — base body */
+  --fs-md: 1.25rem;    /* 20px */
+  --fs-lg: 1.75rem;    /* 28px */
+  --fs-xl: 2.5rem;     /* 40px */
+  --fs-2xl: 3.5rem;    /* 56px */
+  --fs-3xl: 5rem;      /* 80px — hero-scale display lines */
+
+  --lh-tight: 1.1;
+  --lh-normal: 1.5;
+  --lh-relaxed: 1.75;
+
+  /* ---- Spacing (8px base scale) ---------------------------------------- */
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2rem;
+  --space-5: 3rem;
+  --space-6: 4.5rem;
+  --space-7: 6rem;
+  --space-8: 9rem;
+
+  /* ---- Layout ------------------------------------------------------------ */
+  --content-max-width: 720px;
+  --content-wide-width: 1100px;
+  --section-padding-y: var(--space-7);
+  --section-padding-x: var(--space-3);
+
+  /* ---- Motion: named easings, not defaults ----------------------------- */
+  --ease-bloom: cubic-bezier(0.22, 1, 0.36, 1);   /* soft overshoot-free settle — flowers, reveals */
+  --ease-page: cubic-bezier(0.65, 0, 0.35, 1);    /* page/section transitions */
+  --ease-linear: linear;                          /* particles, continuous ambient motion */
+
+  --dur-fast: 240ms;
+  --dur-normal: 600ms;
+  --dur-slow: 1400ms;
+  --dur-bloom: 2200ms;    /* single flower bloom */
+
+  /* ---- Section background surfaces (Phase 14 makes these theme-aware) -- */
+  --surface-1: #0C1A16;
+  --surface-2: #0F241F;
+  --surface-3: #142E28;
+  --surface-4: #16302A;
+  --surface-5: #1B3A2F;
+  --surface-6: #1C3A32;
+  --surface-7: #1E4137;
+
+  /* ---- Elevation ---------------------------------------------------------- */
+  --shadow-soft: 0 8px 30px rgba(12, 26, 22, 0.25);
+  --shadow-deep: 0 20px 60px rgba(12, 26, 22, 0.4);
+
+  /* ---- Radii (kept small/near-zero — this is a printed-plate aesthetic,
+         not a rounded glassmorphism one) --------------------------------- */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+}
+
+/* Reduced motion: respected globally, not just spot-patched */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 1ms;
+    --dur-normal: 1ms;
+    --dur-slow: 1ms;
+    --dur-bloom: 1ms;
+  }
+}
+
+/* ==========================================================================
+   PHASE 14 — LIGHT / "ROMANTIC DAY" MODE
+   Dark mode (the default above) is the bottle-green "Pressed Botanical
+   Conservatory" from Phase 1 — deliberately kept instead of switching to
+   a literal midnight-blue, since it's already the site's whole visual
+   identity. Light mode goes cream / white / pastel pink / warm sunlight,
+   as asked, remapping the same semantic aliases and surface tokens so
+   every section re-themes at once rather than each needing its own
+   light-mode CSS.
+   ========================================================================== */
+:root[data-theme='light'] {
+  --color-bg: var(--color-ground-light);
+  --color-bg-light: var(--color-white);
+  --color-text-on-dark: var(--color-ground-darker);
+  --color-rule: var(--color-accent-brass);
+
+  --surface-1: #FBF6ED;
+  --surface-2: #F6EFE4;
+  --surface-3: #F3E6DD;
+  --surface-4: #EFE4D2;
+  --surface-5: #F0DED2;
+  --surface-6: #FDF8F2;
+  --surface-7: #F7DFD5; /* pastel-pink / warm-sunlight emphasis band */
+
+  --shadow-soft: 0 8px 24px rgba(184, 147, 90, 0.18);
+  --shadow-deep: 0 16px 40px rgba(184, 147, 90, 0.28);
+}
+

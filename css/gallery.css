@@ -1,0 +1,207 @@
+/* ==========================================================================
+   PHASE 7 — MEMORY GALLERY
+   Polaroid-style cards, scattered with a slight resting tilt, straighten
+   and lift on hover. The brief asks for glassmorphism specifically here
+   — used on the hover "view" overlay only, tinted brass/ivory rather
+   than the generic white/purple version, so it borrows the effect
+   without breaking the rest of the site's restrained look.
+   ========================================================================== */
+
+#gallery {
+  min-height: 100vh;
+  background: linear-gradient(180deg, var(--surface-4) 0%, var(--surface-5) 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+#gallery { text-align: center; }
+#gallery .gallery-grid { text-align: left; }
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 240px));
+  justify-content: center;
+  gap: var(--space-5) var(--space-4);
+  max-width: 1000px;
+  width: 100%;
+  padding: var(--space-3) 0 var(--space-2);
+}
+
+.polaroid {
+  position: relative;
+  background: var(--color-white);
+  padding: var(--space-1) var(--space-1) var(--space-3);
+  box-shadow: var(--shadow-soft);
+  cursor: pointer;
+  border: none;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  transform: rotate(var(--tilt, -2deg));
+  transition: transform var(--dur-normal) var(--ease-bloom), box-shadow var(--dur-normal) var(--ease-bloom);
+}
+.polaroid:nth-child(1) { --tilt: -3deg; }
+.polaroid:nth-child(2) { --tilt: 2deg; }
+.polaroid:nth-child(3) { --tilt: -1.5deg; }
+.polaroid:nth-child(4) { --tilt: 2.5deg; }
+.polaroid:nth-child(5) { --tilt: -2.5deg; }
+.polaroid:nth-child(6) { --tilt: -1.5deg; }
+
+.polaroid:hover,
+.polaroid:focus-visible {
+  transform: rotate(0deg) translateY(-6px) scale(1.03);
+  box-shadow: var(--shadow-deep);
+  z-index: 2;
+}
+
+.polaroid-photo {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background:
+    repeating-linear-gradient(135deg, var(--color-ground-light) 0 10px, var(--color-ground-light-2) 10px 20px);
+}
+
+.polaroid-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 700ms var(--ease-bloom);
+}
+.polaroid:hover .polaroid-photo img,
+.polaroid:focus-visible .polaroid-photo img {
+  transform: scale(1.08);
+}
+
+/* Shown only if a real photo hasn't been dropped in yet (see gallery.js
+   onerror handling) — a quiet placeholder rather than a broken-image icon. */
+.polaroid-photo .placeholder-icon {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.4;
+}
+.polaroid-photo .placeholder-icon svg { width: 30%; height: 30%; stroke: var(--color-accent-moss); fill: none; stroke-width: 1.4; }
+.polaroid.has-photo .placeholder-icon { display: none; }
+
+/* Brass-tinted glass hover overlay — the brief's "glassmorphism" ask,
+   scoped to this one hover state rather than applied site-wide. */
+.polaroid-glass {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  padding: var(--space-2);
+  background: rgba(184, 147, 90, 0.22);
+  backdrop-filter: blur(6px) saturate(1.1);
+  -webkit-backdrop-filter: blur(6px) saturate(1.1);
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-page);
+}
+.polaroid:hover .polaroid-glass,
+.polaroid:focus-visible .polaroid-glass {
+  opacity: 1;
+}
+.polaroid-glass span {
+  font-size: var(--fs-xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-white);
+  text-shadow: 0 1px 4px rgba(12, 26, 22, 0.5);
+}
+
+.polaroid-caption {
+  display: block;
+  padding-top: var(--space-1);
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: var(--fs-xs);
+  color: var(--color-ground-darker);
+  text-align: center;
+}
+
+/* ---- Lightbox ------------------------------------------------------------ */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(12, 26, 22, 0.88);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--dur-normal) var(--ease-page), visibility var(--dur-normal) var(--ease-page);
+  padding: var(--space-3);
+}
+.lightbox.is-open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.lightbox-frame {
+  position: relative;
+  width: min(560px, 100%);
+  background: var(--color-white);
+  padding: var(--space-2) var(--space-2) var(--space-4);
+  box-shadow: var(--shadow-deep);
+  transform: scale(0.94);
+  transition: transform var(--dur-normal) var(--ease-bloom);
+}
+.lightbox.is-open .lightbox-frame {
+  transform: scale(1);
+}
+
+.lightbox-photo {
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--color-ground-light);
+}
+.lightbox-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.lightbox-caption {
+  margin-top: var(--space-2);
+  text-align: center;
+  font-family: var(--font-body);
+  font-style: italic;
+  color: var(--color-ground-darker);
+}
+
+.lightbox-close,
+.lightbox-prev,
+.lightbox-next {
+  position: absolute;
+  border: none;
+  background: var(--color-ground-darker);
+  color: var(--color-ground-light);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-page);
+}
+.lightbox-close:hover, .lightbox-prev:hover, .lightbox-next:hover { background: var(--color-accent-moss); }
+
+.lightbox-close { top: -18px; right: -18px; }
+.lightbox-prev { left: -18px; top: 50%; transform: translateY(-50%); }
+.lightbox-next { right: -18px; top: 50%; transform: translateY(-50%); }
+
+@media (max-width: 640px) {
+  .lightbox-close { top: -14px; right: 0; }
+  .lightbox-prev { left: 0; }
+  .lightbox-next { right: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .polaroid, .polaroid-photo img, .polaroid-glass, .lightbox, .lightbox-frame {
+    transition: none;
+  }
+}

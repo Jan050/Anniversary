@@ -1,0 +1,72 @@
+/* ==========================================================================
+   PHASE 15 — ENDING
+   Same crossfade mechanism as Phase 6's celebration messages (kept
+   consistent rather than inventing a new transition for the last
+   section) — three beats this time, and the final one stays on screen
+   with sparkles, since it's where the whole site ends.
+   ========================================================================== */
+
+#ending {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: var(--space-3);
+  background: linear-gradient(180deg, var(--surface-4) 0%, var(--surface-1) 100%);
+  overflow: hidden;
+  padding-bottom: var(--space-7);
+}
+
+.ending-text {
+  position: relative;
+  width: 100%;
+  max-width: var(--content-max-width);
+  min-height: 3.4em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.ending-message {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity var(--dur-slow) var(--ease-bloom), transform var(--dur-slow) var(--ease-bloom);
+  padding: 0 var(--space-2);
+}
+.ending-message.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.ending-message--body {
+  font-family: var(--font-body);
+  font-size: clamp(var(--fs-md), 2.6vw, var(--fs-lg));
+  color: var(--color-text-on-dark);
+  line-height: var(--lh-relaxed);
+}
+
+.ending-message--final {
+  font-family: var(--font-display);
+  font-size: clamp(var(--fs-2xl), 6vw, var(--fs-3xl));
+  color: var(--color-accent-brass-soft);
+}
+
+.ending-sparkles {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ending-message { transition: none; }
+}

@@ -1,0 +1,219 @@
+/* ==========================================================================
+   PHASE 3 — LANDING EXPERIENCE
+   Full-viewport dark scene: ambient stars/fireflies/petals behind a
+   centered glowing envelope. Opening the envelope hands off to Phase 4.
+   ========================================================================== */
+
+#landing {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 50% 30%, var(--surface-7) 0%, var(--surface-1) 75%);
+  padding: var(--space-4);
+  max-width: none;
+}
+
+#landing .section-mark {
+  position: absolute;
+  top: var(--space-3);
+  left: var(--space-3);
+  margin: 0;
+  z-index: 3;
+}
+
+#landing > p:not(.section-mark) { display: none; } /* Phase 1 placeholder copy */
+
+/* ---- Ambient layers --------------------------------------------------- */
+.landing-ambient {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.star {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--color-white);
+  opacity: 0;
+  animation: star-twinkle var(--twinkle-duration, 4s) var(--ease-linear) infinite;
+  animation-delay: var(--twinkle-delay, 0s);
+}
+@keyframes star-twinkle {
+  0%, 100% { opacity: 0; }
+  50% { opacity: var(--twinkle-peak, 0.8); }
+}
+
+.firefly {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--color-accent-brass-soft);
+  box-shadow: 0 0 8px 2px var(--color-accent-brass-soft);
+  opacity: 0;
+  animation: firefly-drift var(--firefly-duration, 10s) var(--ease-linear) infinite;
+  animation-delay: var(--firefly-delay, 0s);
+}
+@keyframes firefly-drift {
+  0%   { transform: translate(0, 0); opacity: 0; }
+  15%  { opacity: 0.9; }
+  50%  { transform: translate(var(--firefly-x, 40px), var(--firefly-y, -30px)); }
+  85%  { opacity: 0.5; }
+  100% { transform: translate(var(--firefly-x2, -20px), var(--firefly-y2, -60px)); opacity: 0; }
+}
+
+.drift-petal {
+  position: absolute;
+  top: -20px;
+  width: 10px;
+  height: 10px;
+  background: var(--color-accent-blush);
+  border-radius: 60% 0 60% 0;
+  opacity: 0;
+  animation: petal-fall var(--petal-duration, 12s) var(--ease-linear) infinite;
+  animation-delay: var(--petal-delay, 0s);
+}
+@keyframes petal-fall {
+  0%   { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+  10%  { opacity: 0.85; }
+  90%  { opacity: 0.5; }
+  100% { transform: translate(var(--petal-x, 60px), 100vh) rotate(320deg); opacity: 0; }
+}
+
+/* ---- Envelope ----------------------------------------------------------- */
+.envelope {
+  position: relative;
+  z-index: 2;
+  width: min(360px, 78vw);
+  aspect-ratio: 3 / 2;
+  cursor: pointer;
+  transition: transform var(--dur-normal) var(--ease-bloom), filter var(--dur-normal) var(--ease-bloom);
+  perspective: 1000px;
+}
+
+.envelope:hover,
+.envelope:focus-visible {
+  transform: translateY(-6px);
+  filter: drop-shadow(0 0 18px rgba(217, 189, 142, 0.35));
+}
+
+.envelope-body {
+  position: absolute;
+  inset: 0;
+  background: var(--color-ground-light);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-deep);
+  z-index: 1;
+}
+
+/* The letter paper peeking up from inside — slides out on open */
+.envelope-paper {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  top: 10%;
+  height: 85%;
+  background: var(--color-white);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 4px 14px rgba(12, 26, 22, 0.2);
+  z-index: 0;
+  transition: transform 1100ms var(--ease-bloom), opacity 1100ms var(--ease-bloom);
+  transform: translateY(0%);
+}
+
+/* Flap: triangle from the top edge down to center, folds open on click */
+.envelope-flap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60%;
+  background: var(--color-ground-light-2);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  transform-origin: top center;
+  transform: rotateX(0deg);
+  transition: transform 900ms var(--ease-bloom);
+  z-index: 2;
+  box-shadow: inset 0 -6px 10px -6px rgba(12, 26, 22, 0.15);
+}
+
+.envelope-seal {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, var(--color-accent-brass-soft), var(--color-accent-brass) 70%);
+  box-shadow: var(--shadow-soft);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 400ms var(--ease-bloom), opacity 500ms var(--ease-bloom);
+}
+.envelope-seal svg { width: 20px; height: 20px; fill: var(--color-ground-darker); opacity: 0.55; }
+
+.envelope-label {
+  position: absolute;
+  bottom: 14%;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--fs-md);
+  color: var(--color-ground-darker);
+  opacity: 0.75;
+  z-index: 1;
+  margin: 0;
+}
+
+.envelope-hint {
+  position: absolute;
+  bottom: -2.5rem;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: var(--fs-2xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-accent-brass-soft);
+  opacity: 0.7;
+  animation: hint-pulse 2.4s var(--ease-linear) infinite;
+}
+@keyframes hint-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.85; }
+}
+
+/* ---- Open state ---------------------------------------------------------- */
+.envelope.is-open {
+  cursor: default;
+  transform: translateY(-6px) scale(1.03);
+}
+.envelope.is-open .envelope-flap {
+  transform: rotateX(180deg);
+}
+.envelope.is-open .envelope-paper {
+  transform: translateY(-62%);
+}
+.envelope.is-open .envelope-seal {
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+}
+.envelope.is-open .envelope-hint {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .star, .firefly, .drift-petal { animation: none; opacity: 0.4; }
+  .envelope-hint { animation: none; opacity: 0.7; }
+}
+
+:root[data-theme='light'] .star {
+  opacity: 0 !important;
+}
