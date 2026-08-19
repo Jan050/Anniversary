@@ -4,7 +4,7 @@
    updated the <source src> on #ambient-music in index.html).
    ========================================================================== */
 
-var SONG_TITLE = '[Song Title] \u2014 [Artist]';
+var SONG_TITLE = 'Daylight \u2014 Taylor Swift';
 
 /* ========================================================================== 
    Logic below. Listens to the audio element's own play/pause/timeupdate
